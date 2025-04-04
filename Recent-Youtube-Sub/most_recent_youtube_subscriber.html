@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: transparent;
+            font-family: 'Orbitron', 'Arial Black', sans-serif;
+            overflow: hidden;
+        }
+
+        .subscriber-panel {
+            position: absolute;
+            width: 300px;  /* Adjust to match your image width */
+            height: 60px;  /* Adjust to match your image height */
+            background-image: url('New-Subscriber.png');  /* Using relative path */
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .scrolling-text {
+            color: #5dfe00;
+            font-size: 24px;
+            font-weight: bold;
+            white-space: nowrap;
+            text-shadow: 0 0 5px rgba(93, 254, 0, 0.5);
+            animation: scrollText 10s linear infinite;
+            padding: 0 20px;
+            width: 100%;
+        }
+
+        @keyframes scrollText {
+            0% {
+                transform: translateX(100%);
+            }
+            100% {
+                transform: translateX(-100%);
+            }
+        }
+
+        .subscriber-icon {
+            color: #5dfe00;
+            margin-right: 10px;
+            font-size: 24px;
+        }
+    </style>
+    <!-- Add Orbitron font -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="subscriber-panel">
+        <div class="scrolling-text" id="subscriber-name">
+            Loading...
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const config = {
+            filePath: 'most_recent_youtube_subscriber.txt'  // File in same directory
+        };
+
+        let lastSubscriber = '';
+        
+        function checkForNewSubscriber() {
+            try {
+                // Create a new XMLHttpRequest
+                const xhr = new XMLHttpRequest();
+                xhr.open('GET', config.filePath, true);
+                
+                xhr.onload = function() {
+                    if (xhr.status === 200) {
+                        const name = xhr.responseText.trim();
+                        if (name && name !== lastSubscriber) {
+                            lastSubscriber = name;
+                            updateSubscriber(name);
+                        }
+                    } else {
+                        console.error('Error loading file:', xhr.status);
+                        document.getElementById('subscriber-name').textContent = 'Error loading file';
+                    }
+                };
+                
+                xhr.onerror = function() {
+                    console.error('Error loading file');
+                    document.getElementById('subscriber-name').textContent = 'Error loading file';
+                };
+                
+                xhr.send();
+            } catch (e) {
+                console.error('Error:', e.message);
+                document.getElementById('subscriber-name').textContent = 'Error: ' + e.message;
+            }
+        }
+
+        function updateSubscriber(name) {
+            const subscriberName = document.getElementById('subscriber-name');
+            if (subscriberName) {
+                subscriberName.textContent = name;
+            }
+        }
+
+        // Check for new subscriber every second
+        setInterval(checkForNewSubscriber, 1000);
+        
+        // Initial check
+        checkForNewSubscriber();
+    </script>
+</body>
+</html> 
